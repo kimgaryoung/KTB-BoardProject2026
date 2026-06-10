@@ -27,5 +27,14 @@ public class CommentController {
     }
 
 
-    //2.
+    //2.댓글 삭제
+    //로그인된 사용자가 맞으면 ->
+    @DeleteMapping("/posts/{postId}/comments/{commentsId}")
+    public ResponseEntity<Result> deleteComment(@PathVariable final Long postId, @PathVariable final Integer commentsId) {
+
+        String response = commentService.deleteComment(postId, commentsId);
+        return ResponseEntity.ok(Result.of(response));
+    }
+
+    //3. 댓글 수정
 }

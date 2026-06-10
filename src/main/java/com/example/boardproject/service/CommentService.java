@@ -11,6 +11,7 @@ import com.example.boardproject.repository.PostRepository;
 import com.example.boardproject.repository.UserProfileRepository;
 import com.example.boardproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class CommentService {
     private final UserProfileRepository userProfileRepository;
     private final CommentRepository commentRepository;
 
-    //댓글 추가
+    //1. 댓글 추가
     @Transactional
     public String createComment(final CommentRequestDto dto, final Long postId, final PrincipalDetails user) {
 
@@ -51,8 +52,26 @@ public class CommentService {
 
 
 
-    //게시글 id찾
+    //2. 게시글 id찾기
     private Post findPostId(final Long postId) {
         return postRepository.findByPostId(postId);
+    }
+
+
+    //3. 댓글 삭제
+    //게스글 -> 특정 댓글 삭제 (내가 쓴 댓글)
+    @Transactional
+    public String deleteComment(final Long postId,final Integer commentId)  {
+
+        //postId와 commentId를 각각 호출하면 2번의 쿼라를 실행해야해서 그냥 새로 만들어서  1번만 실행되는 걸 목표로 인자에 같이 넣었습니다.
+        Comment comments = commentRepository.findByComment(postId, commentId)
+            .orElseThrow(()-> new IllegalArgumentException("이 게시들에 속한 댓글 아님."));
+
+
+        commentRepository.delete(comments);
+
+
+        return "댓글 삭제 성공!";
+
     }
 }
