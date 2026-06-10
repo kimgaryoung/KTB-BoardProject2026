@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 // 게시글 목록 조회 응답  - 사용자에게 전달할 게시글
+//댓글도 상세조회 항목에 추가하고 싶음.
 // 내용은 목록에서 제외
 @Getter
 @AllArgsConstructor
@@ -24,8 +25,27 @@ public class PostGetDetailResponseDto {
     private String postImage;
     private LocalDateTime postDate;
 
+    //댓글전체를 상세조회할때 함꼐 조회하기 위해서 추가
+    private List<CommentInfo> comments;
+
+
+    //comment 전체를 다 요청하니까 댓글안에 또 post내용이 중첩되는 상황이 발생해서 필요한 값만 뽑아서 사용
+    @Getter
+    @AllArgsConstructor
+    public static class CommentInfo {
+        private Integer commentId;
+        private String commentContent;
+        private LocalDateTime commentDate;
+
+        //userprofile출신
+        private String nickname;
+        private String profileImage;
+
+    }
+
     //from : 하나, of : 여러개 반화시
-    public static PostGetDetailResponseDto of(Post post, UserProfile userProfile) {
+    //댓글도 함께 조회되게 변경
+    public static PostGetDetailResponseDto of(Post post, UserProfile userProfile, List<CommentInfo> comments) {
         return PostGetDetailResponseDto.builder()
                 .nickname(userProfile.getNickname())
                 .profileImage(userProfile.getProfileImage())
@@ -34,7 +54,9 @@ public class PostGetDetailResponseDto {
                 .postContent(post.getPostContent())
                 .postTitle(post.getPostTitle())
                 .postDate(post.getPostDate())
+                .comments(comments)
                 .build();
+
     }
 
 //

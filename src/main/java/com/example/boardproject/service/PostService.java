@@ -2,9 +2,11 @@ package com.example.boardproject.service;
 
 import com.example.boardproject.auth.PrincipalDetails;
 import com.example.boardproject.dto.*;
+import com.example.boardproject.entity.Comment;
 import com.example.boardproject.entity.Post;
 import com.example.boardproject.entity.User;
 import com.example.boardproject.entity.UserProfile;
+import com.example.boardproject.repository.CommentRepository;
 import com.example.boardproject.repository.PostRepository;
 import com.example.boardproject.repository.UserProfileRepository;
 import com.example.boardproject.repository.UserRepository;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.boardproject.entity.QComment.comment;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -23,6 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final CommentRepository commentRepository;
 
 
     //게시글 추가
@@ -95,19 +100,25 @@ public class PostService {
     }
 
     //게시글 상세조회
+    //댓글도 함께 조회되게 수정
     @Transactional(readOnly = true)
     public PostGetDetailResponseDto getPost(final Long postId) throws Exception {
         Post post = findByPostId(postId);
         UserProfile userProfile = findByProfileUserId(post.getUserId());
+        List<PostGetDetailResponseDto.CommentInfo> comments = commentRepository.findCommentInfoByPostId(postId);
 
-
-        return PostGetDetailResponseDto.of(post,userProfile);
+        return PostGetDetailResponseDto.of(post,userProfile,comments);
     }
 
 
+    //프로필 유저 Id조회
     private UserProfile findByProfileUserId(final Long userId) throws Exception {
         return userProfileRepository.findByUserId(userId);
     }
+
+
+
+
 
 
 
