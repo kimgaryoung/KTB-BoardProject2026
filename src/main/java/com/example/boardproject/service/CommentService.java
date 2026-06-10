@@ -14,6 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
+import static com.example.boardproject.entity.QComment.comment;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -37,16 +41,15 @@ public class CommentService {
                 findPost
         );
 
+        comment.updateCommentDate(LocalDateTime.now());// 시간추가
+
         Comment saved =commentRepository.save(comment);
 
         return "댓글 등록 완료 (id: " + saved.getCommentId() + ")";
     }
 
 
-//    //사용자 Id찾기 - 착각했음.. 조회하고 보니 User가 아니라 UserProfile임.
-//    private User findUserProfileId(final Long userId) {
-//        return userRepository.findByUserId(userId);
-//    }
+
 
     //게시글 id찾
     private Post findPostId(final Long postId) {

@@ -86,6 +86,7 @@ public class PostService {
 
 
     //게시글 전체 조회.=게시글 목록 조회
+    //-----------댓글 마무리 하고 여기 N+1문제 다시 생각해보기---------------
     @Transactional(readOnly = true)
     public List<PostGetResponseDto> getPosts() {
         return postRepository.findAll()

@@ -28,7 +28,7 @@ public class Comment {
 
 
     //3. commentDate DateTime update current_timestamp (기본값: 현재시간, 수정하면 다시 현재시간으로 업데이트)
-
+    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime commentDate;
 
     //4. postId  long, userId long 참조힘
@@ -46,16 +46,17 @@ public class Comment {
 
 
     //생성자
-    public Comment
-    (String commentContent,UserProfile userProfile, Post post) {
+    public Comment(String commentContent,UserProfile userProfile, Post post) {
         this.commentContent = commentContent;
         this.userProfile = userProfile;
         this.post = post;
     }
 
 
-
-
+    //댓글 단 시간 추가
+    public void updateCommentDate(LocalDateTime commentDate) {
+        this.commentDate = commentDate;
+    }
 
 
 
