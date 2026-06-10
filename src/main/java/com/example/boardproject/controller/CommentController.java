@@ -30,11 +30,28 @@ public class CommentController {
     //2.댓글 삭제
     //로그인된 사용자가 맞으면 ->
     @DeleteMapping("/posts/{postId}/comments/{commentsId}")
-    public ResponseEntity<Result> deleteComment(@PathVariable final Long postId, @PathVariable final Integer commentsId) {
+    public ResponseEntity<Result> deleteComment(@PathVariable final Long postId,
+                                                @PathVariable final Integer commentsId,
+                                                @AuthenticationPrincipal final PrincipalDetails user) {
 
-        String response = commentService.deleteComment(postId, commentsId);
+        String response = commentService.deleteComment(postId, commentsId,user.getId());
         return ResponseEntity.ok(Result.of(response));
     }
 
+
     //3. 댓글 수정
+    //댓글 내용 수정되고 날짜 update
+    @PatchMapping("/posts/{postId}/comments/{commentsId}")
+    public String patchComment(@RequestBody final CommentRequestDto dto,
+                                              @PathVariable final Long postId,
+                                              @PathVariable final Integer commentsId,
+                                              @AuthenticationPrincipal final PrincipalDetails user)throws Exception{
+
+        return commentService.patchComment(dto, postId,commentsId,user.getId());
+
+    }
+
+
+
+
 }

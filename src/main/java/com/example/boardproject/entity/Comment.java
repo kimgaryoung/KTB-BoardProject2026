@@ -58,6 +58,12 @@ public class Comment {
         this.commentDate = commentDate;
     }
 
+    public void updateCommentContent(String commentContent)
+    {
+
+        this.commentContent =commentContent;
+    }
+
 
 
 }
