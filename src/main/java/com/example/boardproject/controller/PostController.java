@@ -6,9 +6,11 @@ import com.example.boardproject.dto.*;
 import com.example.boardproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,19 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 추가
-    @PostMapping("/posts")
-    public ResponseEntity<Result> createPost(@RequestBody final PostRequestDto dto,
+    //260627 - JSON 요청값과 선택 이미지 파일을 받는 multipart 생성 API 추가
+    @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Result> createPost(@RequestPart("request") final PostCreateRequestDto dto,
+                                             @RequestPart(value = "image", required = false) final MultipartFile image,
                                              @AuthenticationPrincipal final PrincipalDetails user) {
+        PostResponseDto response = postService.createPost(dto, image, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Result.of(response));
+    }
+
+    //260627 - 기존 JSON 방식 클라이언트 호환 API 유지
+    @PostMapping(value = "/posts", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Result> createPostLegacy(@RequestBody final PostRequestDto dto,
+                                                   @AuthenticationPrincipal final PrincipalDetails user) {
         PostResponseDto response = postService.createPost(dto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(Result.of(response));
     }

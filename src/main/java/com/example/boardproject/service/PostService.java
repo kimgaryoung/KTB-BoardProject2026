@@ -10,6 +10,7 @@ import com.example.boardproject.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,17 +27,31 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final PostProfileRepository postProfileRepository;
     private final ViewerRepository viewerRepository;
+    private final S3ImageService s3ImageService;
 
 
     // 게시글 추가
     @Transactional
     public PostResponseDto createPost(final PostRequestDto dto, final PrincipalDetails user) {
+        return savePost(dto.getTitle(), dto.getContent(), null, user);
+    }
+
+    //260627 - 이미지가 있으면 S3 업로드 후 imageKey를 저장하는 게시글 생성 기능 추가
+    @Transactional
+    public PostResponseDto createPost(final PostCreateRequestDto dto,
+                                      final MultipartFile image,
+                                      final PrincipalDetails user) {
+        String imageKey = image == null ? null : s3ImageService.upload(image);
+        return savePost(dto.getTitle(), dto.getContent(), imageKey, user);
+    }
+
+    private PostResponseDto savePost(String title, String content, String imageKey, PrincipalDetails user) {
         Post post = new Post(
                 Long.parseLong(user.getUserId()),
-                dto.getTitle(),
-                dto.getAttachFileUrl(),
+                title,
+                imageKey,
                 LocalDateTime.now(),
-                dto.getContent()
+                content
         );
 
         Post savedPost = postRepository.save(post);
@@ -71,7 +86,6 @@ public class PostService {
 
         post.updatePost(
                 dto.getTitle(),
-                dto.getAttachFileUrl(),
                 dto.getContent(),
                 LocalDateTime.now()
         );
@@ -126,7 +140,10 @@ public class PostService {
             isLiked = viewer != null && Boolean.TRUE.equals(viewer.getLikeCheck());
         }
 
-        return PostGetDetailResponseDto.of(post, userProfile, comments, postProfile, isLiked);
+        //260627 - 상세 조회 시 imageKey를 공개 이미지 URL로 변환하도록 추가
+        return PostGetDetailResponseDto.of(
+                post, userProfile, comments, postProfile, isLiked, s3ImageService.getImageUrl(post.getPostImageKey())
+        );
     }
 
     // 조회수 증가 (버그 수정: Viewer 저장 누락, viewCount 항상 1 세팅 → 증가로 변경)

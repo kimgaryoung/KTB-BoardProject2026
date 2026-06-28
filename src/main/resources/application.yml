@@ -1,0 +1,40 @@
+# 260628 - EC2 배포 설정을 환경변수 기반 application.yml로 통합
+cloud:
+  aws:
+    region: ${AWS_REGION:ap-northeast-2}
+    s3:
+      bucket: ${AWS_S3_BUCKET:}
+      base-url: ${AWS_S3_BASE_URL:}
+
+spring:
+  application:
+    name: BoardProject
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/bank}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+  servlet:
+    multipart:
+      # 260627 - 이미지 업로드 요청 크기 제한 추가
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-exp-seconds: 10800
+  refresh-token-exp-seconds: 86400
+
+server:
+  port: 3000
+  servlet:
+    context-path: /v1

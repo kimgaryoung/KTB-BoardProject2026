@@ -24,9 +24,9 @@ public class Post {
     @Column(nullable = false, length = 26)
     private String postTitle;
 
-    //게시글 사진.
-    @Column(length = 255)
-    private String postImage;
+    //260627 - Java 필드명을 postImageKey로 명확히 하고 기존 DB 컬럼명은 유지
+    @Column(name = "post_image", length = 255)
+    private String postImageKey;
 
     // 제약조건: NOT NULL, 글자수 제한 없음
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -37,19 +37,18 @@ public class Post {
     private LocalDateTime postDate;
 
     // 생성자: 게시글 작성 시 -사용자에게 받는 값 (postDate는 DB가 자동입력),
-    public Post(Long userId, String postTitle, String postImage, LocalDateTime postDate , String postContent) {
+    public Post(Long userId, String postTitle, String postImageKey, LocalDateTime postDate , String postContent) {
         this.userId = userId;
         this.postTitle = postTitle;
-        this.postImage = postImage;
+        this.postImageKey = postImageKey;
         this.postDate = postDate;
         this.postContent = postContent;
     }
 
-    // 게시글 수정 시 호출 - 제목, 이미지, 내용 변경
-    public void updatePost(String postTitle, String postImage, String postContent,LocalDateTime postDate) {
+    //260627 - 기존 수정 API가 이미지 URL로 imageKey를 덮어쓰지 않도록 이미지 변경 제거
+    public void updatePost(String postTitle, String postContent, LocalDateTime postDate) {
         this.postTitle = postTitle;
-        this.postImage = postImage;
         this.postContent = postContent;
-        this.postDate=postDate;
+        this.postDate = postDate;
     }
 }

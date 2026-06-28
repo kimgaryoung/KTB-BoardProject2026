@@ -21,6 +21,9 @@ public class PostGetDetailResponseDto {
     private LocalDateTime createdAt;
     private String nickname;
     private String profileImage;
+    //260627 - 프론트에서 바로 사용할 수 있는 게시글 이미지 URL 필드 추가
+    private String postImageUrl;
+    //260627 - 기존 응답 호환을 위해 filePath에도 동일한 공개 URL 반환
     private String filePath;
     private Boolean isLiked;
     private Integer likeCount;
@@ -45,7 +48,8 @@ public class PostGetDetailResponseDto {
                                               UserProfile userProfile,
                                               List<CommentInfo> comments,
                                               PostProfile postProfile,
-                                              Boolean isLiked) {
+                                              Boolean isLiked,
+                                              String postImageUrl) {
         return PostGetDetailResponseDto.builder()
                 .id(post.getPostId())
                 .title(post.getPostTitle())
@@ -53,7 +57,8 @@ public class PostGetDetailResponseDto {
                 .createdAt(post.getPostDate())
                 .nickname(userProfile.getNickname())
                 .profileImage(userProfile.getProfileImage())
-                .filePath(post.getPostImage())
+                .postImageUrl(postImageUrl)
+                .filePath(postImageUrl)
                 .isLiked(isLiked)
                 .likeCount(postProfile.getLikeCount())
                 .viewCount(postProfile.getViewerCount())

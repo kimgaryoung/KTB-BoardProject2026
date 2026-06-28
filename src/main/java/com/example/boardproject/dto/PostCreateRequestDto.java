@@ -7,10 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostRequestDto {
+//260627 - multipart 게시글 생성 요청의 JSON 파트 DTO 추가
+public class PostCreateRequestDto {
     private String title;
     private String content;
-    //260627 - 기존 JSON 요청 호환 필드이며 URL은 DB에 저장하지 않음
-    @Deprecated
-    private String attachFileUrl;
 }
