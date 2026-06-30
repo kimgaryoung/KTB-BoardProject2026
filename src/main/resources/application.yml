@@ -28,7 +28,7 @@ spring:
       max-request-size: 6MB
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: this-is-scarlett-jwt-secret-100010101010101010
   access-token-exp-seconds: 10800
   refresh-token-exp-seconds: 86400
 
